@@ -4,9 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>발표자 화면</title>
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css" />
 </head>
+
 <body class="presenter-body">
+
+  <!-- 상단 -->
   <header class="topbar white-topbar">
     <div>
       <div class="brand-chip brand-red">PRESENTER VIEW</div>
@@ -22,14 +25,18 @@
     </div>
   </header>
 
+  <!-- 본문 -->
   <main class="presenter-layout large-slide-layout">
+
+    <!-- 슬라이드 영역 -->
     <section class="slide-panel white-panel">
+
       <div class="slide-wrapper large-slide-wrapper">
         <img id="slideImage" class="slide-image" alt="슬라이드 이미지" />
         <div id="slideFallback" class="slide-fallback hidden">
           <h2>슬라이드를 불러오지 못했습니다.</h2>
           <p>
-            <code>slides/slides.json</code> 파일과 이미지 파일명을 확인해 주세요.
+            <code>slides/slides.json</code> 확인 필요
           </p>
         </div>
       </div>
@@ -41,6 +48,7 @@
       </div>
 
       <div class="bottom-widgets">
+
         <div class="progress-card white-subpanel">
           <div class="widget-title">Progress</div>
           <div class="progress-bar">
@@ -50,30 +58,38 @@
         </div>
 
         <div class="memo-card white-subpanel">
-          <div class="widget-title">발표자 급한 메모</div>
-          <textarea id="memoInput" placeholder="발표 중 급하게 메모할 내용을 적어두세요. 이 메모는 발표자 브라우저에만 저장됩니다."></textarea>
+          <div class="widget-title">발표자 메모</div>
+          <textarea id="memoInput"></textarea>
         </div>
+
       </div>
     </section>
 
+    <!-- 채팅 영역 -->
     <aside class="chat-panel white-panel slim-chat-panel">
+
       <div class="chat-header white-chat-header">
         <div>
           <h2>실시간 채팅</h2>
-          <div class="small-muted">모바일 참여자의 익명 메시지</div>
+          <div class="small-muted">모바일 참여 메시지</div>
         </div>
         <span class="live-badge">LIVE</span>
       </div>
 
       <div class="link-inline-box">
-        <div class="small-label">참여자 접속 링크</div>
+        <div class="small-label">참여 링크</div>
         <code id="mobileLinkText">-</code>
       </div>
 
+      <!-- ✅ 채팅 출력 영역 (중요) -->
       <div id="chatList" class="chat-list"></div>
+
     </aside>
+
   </main>
 
+  <!-- ✅ JS -->
   <script type="module" src="./presenter.js"></script>
+
 </body>
 </html>

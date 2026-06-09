@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>실시간 발표 + 익명 채팅 시작</title>
+  ./styles.css
+</head>
+<body class="landing-body">
+  <div class="landing-card">
+    <div class="brand-chip">LIVE PRESENTATION CHAT</div>
+    <h1>실시간 발표 + 익명 채팅</h1>
+    <p class="landing-desc">
+      발표자(데스크탑) 화면과 참석자(모바일) 채팅 화면을 분리해서 접속하는 버전입니다.
+    </p>
+
+    <div class="form-group">
+      <label for="roomInput">Room 코드</label>
+      <input id="roomInput" type="text" placeholder="예: jb2026" />
+      <small>발표자와 참석자가 같은 Room 코드를 써야 같은 채팅방으로 연결됩니다.</small>
+    </div>
+
+    <div class="split-link-grid">
+      <div class="link-card">
+        <div class="link-card-title">발표자(데스크탑) 링크</div>
+        <code id="presenterLinkText">-</code>
+        <div class="card-actions">
+          <button id="openPresenterBtn" class="primary-btn">발표자 화면 열기</button>
+          <button id="copyPresenterLinkBtn" class="ghost-btn">링크 복사</button>
+        </div>
+      </div>
+
+      <div class="link-card">
+        <div class="link-card-title">참석자(모바일) 링크</div>
+        <code id="mobileLinkText">-</code>
+        <div class="card-actions">
+          <button id="openMobileBtn" class="secondary-btn">모바일 화면 열기</button>
+          <button id="copyMobileLinkBtn" class="ghost-btn">링크 복사</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-title">사용 방법</div>
+      <ol>
+        <li>PowerPoint를 16:9 이미지(PNG/JPG)로 저장합니다.</li>
+        <li><code>slides</code> 폴더에 슬라이드 이미지를 넣습니다.</li>
+        <li><code>slides/slides.json</code> 파일에 이미지 파일명을 적습니다.</li>
+        <li>Firebase 설정값을 <code>firebase-config.js</code>에 붙여넣습니다.</li>
+        <li>GitHub에 업로드하고 GitHub Pages를 켭니다.</li>
+        <li>발표자는 발표자 링크, 참석자는 모바일 링크로 접속합니다.</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    const roomInput = document.getElementById("roomInput");
+    const presenterLinkText = document.getElementById("presenterLinkText");
+    const mobileLinkText = document.getElementById("mobileLinkText");
+    const openPresenterBtn = document.getElementById("openPresenterBtn");
+    const copyPresenterLinkBtn = document.getElementById("copyPresenterLinkBtn");
+    const openMobileBtn = document.getElementById("openMobileBtn");
+    const copyMobileLinkBtn = document.getElementById("copyMobileLinkBtn");
+
+    const defaultRoom = "session-" + new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    roomInput.value = defaultRoom;
+
+    function getBasePath() {
+      const path = window.location.pathname;
+      if (path.endsWith("index.html")) {
+        return window.location.origin + path.replace(/index\.html$/, "");
+      }
+      if (path.endsWith("/")) {
+        return window.location.origin + path;
+      }
+      return window.location.origin + path.substring(0, path.lastIndexOf("/") + 1);
+    }
+
+    function buildLinks() {
+      const room = (roomInput.value || defaultRoom).trim();
+      const base = getBasePath();
+      const presenterUrl = `${base}presenter.html?room=${encodeURIComponent(room)}`;
+      const mobileUrl = `${base}mobile.html?room=${encodeURIComponent(room)}`;
+
+      presenterLinkText.textContent = presenterUrl;
+      mobileLinkText.textContent = mobileUrl;
+
+      return { presenterUrl, mobileUrl };
+    }
+
+    roomInput.addEventListener("input", buildLinks);
+    buildLinks();
+
+    openPresenterBtn.addEventListener("click", () => {
+      const { presenterUrl } = buildLinks();
+      window.open(presenterUrl, "_blank");
+    });
+
+    openMobileBtn.addEventListener("click", () => {
+      const { mobileUrl } = buildLinks();
+      window.open(mobileUrl, "_blank");
+    });
+
+    copyPresenterLinkBtn.addEventListener("click", async () => {
+      const { presenterUrl } = buildLinks();
+      await navigator.clipboard.writeText(presenterUrl);
+      alert("발표자 링크가 복사되었습니다.");
+    });
+
+    copyMobileLinkBtn.addEventListener("click", async () => {
+      const { mobileUrl } = buildLinks();
+      await navigator.clipboard.writeText(mobileUrl);
+      alert("모바일 링크가 복사되었습니다.");
+    });
+  </script>
+</body>
+</html>

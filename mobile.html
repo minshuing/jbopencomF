@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>익명 채팅 참여</title>
+  ./styles.css
+</head>
+<body class="mobile-body">
+  <div id="setupModal" class="setup-modal">
+    <div class="setup-card">
+      <div class="brand-chip brand-red">MOBILE CHAT</div>
+      <h2>익명 참여 설정</h2>
+
+      <div class="form-group">
+        <label for="roomInput">Room 코드</label>
+        <input id="roomInput" type="text" placeholder="예: jb2026" />
+      </div>
+
+      <div class="form-group">
+        <label for="nicknameInput">닉네임</label>
+        <input id="nicknameInput" type="text" maxlength="20" placeholder="예: BlueFox" />
+        <small>익명성을 위해 본인이 직접 닉네임을 정해주세요.</small>
+      </div>
+
+      <button id="startChatBtn" class="primary-btn full-width">채팅 시작</button>
+    </div>
+  </div>
+
+  <header class="mobile-header white-mobile-header">
+    <div>
+      <strong>실시간 익명 채팅</strong>
+      <div class="mobile-sub-info">
+        Room: <span id="roomBadge">-</span><br />
+        닉네임: <span id="nicknameBadge">-</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="mobile-chat-wrap">
+    <div id="mobileChatList" class="mobile-chat-list"></div>
+  </main>
+
+  <form id="chatForm" class="mobile-input-bar white-mobile-input-bar">
+    <input id="messageInput" type="text" maxlength="300" placeholder="메시지를 입력하세요" />
+    <button type="submit" class="primary-btn">전송</button>
+  </form>
+
+  ./mobile.jsscript>
+</body>
+</html>

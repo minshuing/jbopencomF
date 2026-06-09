@@ -33,7 +33,9 @@ function openSetup() {
 }
 
 function closeSetup() {
-  setupModal.classList.add("hidden");
+  if (setupModal) {
+    setupModal.classList.add("hidden");
+  }
 }
 
 function applyIdentity() {

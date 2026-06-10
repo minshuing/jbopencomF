@@ -30,22 +30,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
   console.log("✅ presenter.js 실행됨");
 
+  // ✅ Room 표시
   if (roomBadge) roomBadge.textContent = room;
 
+  // ✅ 참여자 링크
   const mobileLink = buildMobileLink(room);
   if (mobileLinkText) mobileLinkText.textContent = mobileLink;
 
   copyMobileLinkBtn?.addEventListener("click", async () => {
     await navigator.clipboard.writeText(mobileLink);
-    alert("참여자 모바일 링크가 복사되었습니다.");
+    alert("모바일 참여 링크 복사 완료");
   });
 
   clearChatBtn?.addEventListener("click", async () => {
-    const ok = confirm("현재 Room의 채팅을 전체 삭제할까요?");
+    const ok = confirm("채팅 전체 삭제하시겠습니까?");
     if (!ok) return;
     await remove(ref(db, `rooms/${room}/messages`));
   });
 
+  // ✅ 메모
   const memoKey = `presenter-memo-${room}`;
   if (memoInput) {
     memoInput.value = loadLocal(memoKey, "");
@@ -53,6 +56,8 @@ document.addEventListener("DOMContentLoaded", function () {
       saveLocal(memoKey, memoInput.value);
     });
   }
+
+  // ========= 슬라이드 =========
 
   let slides = [];
   let currentSlideIndex = 0;
@@ -78,6 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function showSlideFallback() {
     slideImage?.classList.add("hidden");
     slideFallback?.classList.remove("hidden");
+
     if (slideIndicator) slideIndicator.textContent = "0 / 0";
     if (progressFill) progressFill.style.width = "0%";
     if (progressText) progressText.textContent = "0%";
@@ -116,24 +122,36 @@ document.addEventListener("DOMContentLoaded", function () {
     if (e.key === "ArrowRight") nextBtn?.click();
   });
 
+  // ========= 채팅 =========
+
+  function renderEmpty() {
+    if (!chatList) return;
+
+    chatList.innerHTML = `
+      <div class="empty-state">
+        아직 채팅이 없습니다.<br/>
+        참여자가 메시지를 보내면 표시됩니다.
+      </div>
+    `;
+  }
+
   function renderMessages(messages) {
 
+    if (!chatList) return;
+
     if (!messages.length) {
-      chatList.innerHTML = `
-        <div class="empty-state">
-          아직 채팅이 없습니다.<br />
-          참여자가 모바일에서 메시지를 보내면 여기 표시됩니다.
-        </div>
-      `;
+      renderEmpty();
       return;
     }
 
-    chatList.innerHTML = messages.map((msg) => {
+    let html = "";
+
+    messages.forEach(msg => {
       const nickname = escapeHtml(msg.nickname || "익명");
       const text = escapeHtml(msg.text || "");
       const time = escapeHtml(msg.timeLabel || "");
 
-      return `
+      html += `
         <div class="message-item">
           <div class="message-meta">
             <div class="message-nickname">${nickname}</div>
@@ -142,31 +160,39 @@ document.addEventListener("DOMContentLoaded", function () {
           <div class="message-text">${text}</div>
         </div>
       `;
-    }).join("");
+    });
 
+    chatList.innerHTML = html;
     chatList.scrollTop = chatList.scrollHeight;
   }
 
-  const messagesQuery = query(
-    ref(db, `rooms/${room}/messages`),
-    limitToLast(200)
-  );
+  let unsubscribe = null;
 
-  onValue(messagesQuery, (snapshot) => {
-    console.log("✅ Firebase 업데이트 감지");
+  function subscribeChat() {
 
-    const value = snapshot.val() || {};
+    const messagesQuery = query(
+      ref(db, `rooms/${room}/messages`),
+      limitToLast(200)
+    );
 
-    const messages = Object.entries(value)
-      .map(([id, item]) => ({
-        id,
-        ...item
-      }))
-      .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    console.log("✅ 채팅 구독 시작:", room);
 
-    renderMessages(messages);
-  });
+    unsubscribe = onValue(messagesQuery, (snapshot) => {
 
+      const value = snapshot.val() || {};
+
+      const messages = Object.entries(value)
+        .map(([id, item]) => ({ id, ...item }))
+        .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+
+      console.log("✅ 채팅 업데이트:", messages.length);
+
+      renderMessages(messages);
+    });
+  }
+
+  renderEmpty(); // ✅ 최초 상태 표시
+  subscribeChat();
   loadSlides();
 
 });

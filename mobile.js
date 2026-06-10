@@ -129,3 +129,50 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  chatForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    console.log("✅ 전송 버튼 클릭");
+
+    if (!nickname || !room) {
+      openSetup();
+      return;
+    }
+
+    const text = messageInput.value.trim();
+    if (!text) return;
+
+    const now = Date.now();
+
+    console.log("✅ Firebase 전송:", text);
+
+    try {
+      await push(ref(db, `rooms/${room}/messages`), {
+        nickname,
+        text,
+        createdAt: now,
+        timeLabel: formatTime(now)
+      });
+
+      messageInput.value = "";
+      messageInput.focus();
+
+    } catch (error) {
+      console.error("❌ Firebase 전송 실패:", error);
+    }
+  });
+
+  if (savedNickname) {
+    nickname = savedNickname;
+
+    if (roomBadge) roomBadge.textContent = room;
+    if (nicknameBadge) nicknameBadge.textContent = nickname;
+
+    closeSetup();
+    subscribeMessages();
+  } else {
+    if (roomBadge) roomBadge.textContent = room;
+    openSetup();
+  }
+
+});

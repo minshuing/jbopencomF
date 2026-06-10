@@ -22,16 +22,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let room = getRoomFromQuery();
   let nickname = "";
-  let unsubscribeListener = null;
-  let currentSubscribedRoom = "";
+  let unsubscribeMessages = null;
 
   console.log("✅ mobile.js 실행됨");
 
-  // 초기 room 표시
   if (roomInput) roomInput.value = room;
   if (roomBadge) roomBadge.textContent = room;
 
-  // 현재 room 기준으로 저장된 닉네임 불러오기
   let savedNickname = loadLocal(`nickname-${room}`, "");
   if (savedNickname && nicknameInput) {
     nicknameInput.value = savedNickname;
@@ -52,6 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function renderEmptyState() {
     if (!mobileChatList) return;
+
     mobileChatList.innerHTML = `
       <div class="empty-state">
         아직 메시지가 없습니다.<br />
@@ -68,13 +66,15 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    mobileChatList.innerHTML = messages.map((msg) => {
+    let html = "";
+
+    messages.forEach((msg) => {
       const isMine = msg.nickname === nickname;
       const nicknameHtml = escapeHtml(msg.nickname || "익명");
       const textHtml = escapeHtml(msg.text || "");
       const timeHtml = escapeHtml(msg.timeLabel || "");
 
-      return `
+      html += `
         <div class="mobile-message ${isMine ? "mine" : ""}">
           <div class="message-meta">
             <div class="message-nickname">${nicknameHtml}</div>
@@ -83,7 +83,9 @@ document.addEventListener("DOMContentLoaded", function () {
           <div class="message-text">${textHtml}</div>
         </div>
       `;
-    }).join("");
+    });
+
+    mobileChatList.innerHTML = html;
 
     window.scrollTo({
       top: document.body.scrollHeight,
@@ -94,10 +96,11 @@ document.addEventListener("DOMContentLoaded", function () {
   function subscribeMessages(targetRoom) {
     if (!targetRoom) return;
 
-    // 이미 같은 room 구독 중이면 다시 안 붙임
-    if (currentSubscribedRoom === targetRoom) return;
-
-    currentSubscribedRoom = targetRoom;
+    // 기존 구독이 있으면 해제
+    if (typeof unsubscribeMessages === "function") {
+      unsubscribeMessages();
+      unsubscribeMessages = null;
+    }
 
     const messagesQuery = query(
       ref(db, `rooms/${targetRoom}/messages`),
@@ -106,21 +109,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     console.log("✅ 메시지 구독 시작:", targetRoom);
 
-    onValue(messagesQuery, (snapshot) => {
-      const value = snapshot.val() || {};
+    unsubscribeMessages = onValue(
+      messagesQuery,
+      (snapshot) => {
+        const value = snapshot.val() || {};
 
-      const messages = Object.entries(value)
-        .map(([id, item]) => ({
-          id,
-          ...item
-        }))
-        .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        const messages = Object.entries(value)
+          .map(([id, item]) => ({
+            id,
+            ...item
+          }))
+          .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
 
-      console.log("✅ 메시지 수신:", messages.length);
-      renderMessages(messages);
-    }, (error) => {
-      console.error("❌ 메시지 구독 실패:", error);
-    });
+        console.log("✅ 메시지 수신:", messages.length);
+        renderMessages(messages);
+      },
+      (error) => {
+        console.error("❌ 메시지 구독 실패:", error);
+      }
+    );
   }
 
   function applyIdentity() {
@@ -143,6 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
     saveLocal(`nickname-${room}`, nickname);
     setIdentityUI();
     closeSetup();
+    renderEmptyState();
     subscribeMessages(room);
 
     console.log("✅ 채팅 시작 성공:", room, nickname);
@@ -205,6 +213,7 @@ document.addEventListener("DOMContentLoaded", function () {
     nickname = savedNickname;
     setIdentityUI();
     closeSetup();
+    renderEmptyState();
     subscribeMessages(room);
   } else {
     setIdentityUI();

@@ -1,5 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import { getDatabase } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
 /*
   아래 firebaseConfig는 Firebase Console > 프로젝트 설정 > 내 앱 > SDK 설정 및 구성 에서 복사해서 넣으세요.

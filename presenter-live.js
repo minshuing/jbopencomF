@@ -23,14 +23,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log("✅ presenter LIVE 실행:", room);
 
-  let hasInitialData = false; // ✅ 핵심 상태값 추가
+  let hasInitialData = false;
 
   function renderMessages(messages) {
 
+    if (!chatList) return;
+
     console.log("🟡 renderMessages:", messages.length);
 
+    // ✅ 최초 empty 처리
     if (!messages.length && !hasInitialData) {
-      // ✅ 최초 로딩에서만 empty 표시
       chatList.innerHTML = `
         <div class="empty-state">
           아직 채팅이 없습니다
@@ -40,14 +42,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (messages.length) {
-      hasInitialData = true; // ✅ 데이터 들어오면 true
+      hasInitialData = true;
     }
 
+    // ✅ empty snapshot 무시 (중요)
     if (!messages.length) {
-      // ✅ 이후 empty 데이터는 무시 (덮어쓰기 방지)
       console.log("⚠️ empty snapshot 무시");
       return;
     }
+
+    // ✅ 현재 하단 여부 체크
+    const isAtBottom =
+      chatList.scrollHeight - chatList.scrollTop - chatList.clientHeight < 50;
 
     const frag = document.createDocumentFragment();
 
@@ -56,21 +62,26 @@ document.addEventListener("DOMContentLoaded", () => {
       const item = document.createElement("div");
       item.className = "message-item";
 
+      const meta = document.createElement("div");
+      meta.className = "message-meta";
+
       const nickname = document.createElement("div");
       nickname.className = "message-nickname";
       nickname.textContent = msg.nickname || "익명";
-
-      const text = document.createElement("div");
-      text.className = "message-text";
-      text.textContent = msg.text || "";
 
       const time = document.createElement("div");
       time.className = "message-time";
       time.textContent = msg.timeLabel || "";
 
-      item.appendChild(nickname);
+      meta.appendChild(nickname);
+      meta.appendChild(time);
+
+      const text = document.createElement("div");
+      text.className = "message-text";
+      text.textContent = msg.text || "";
+
+      item.appendChild(meta);
       item.appendChild(text);
-      item.appendChild(time);
 
       frag.appendChild(item);
     });
@@ -78,7 +89,10 @@ document.addEventListener("DOMContentLoaded", () => {
     chatList.innerHTML = "";
     chatList.appendChild(frag);
 
-    chatList.scrollTop = chatList.scrollHeight;
+    // ✅ 자동 스크롤 (조건부)
+    if (isAtBottom) {
+      chatList.scrollTop = chatList.scrollHeight;
+    }
 
     console.log("✅ DOM 반영 완료:", messages.length);
   }
@@ -111,3 +125,4 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+``

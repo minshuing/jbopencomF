@@ -124,5 +124,83 @@ document.addEventListener("DOMContentLoaded", () => {
 
   });
 
+// ==========================================
+  // 📸 슬라이드 제어 기능 추가 (여기를 붙여넣으세요)
+  // ==========================================
+  const slideImage = document.getElementById("slideImage");
+  const slideFallback = document.getElementById("slideFallback");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const slideIndicator = document.getElementById("slideIndicator");
+  const progressFill = document.getElementById("progressFill");
+  const progressText = document.getElementById("progressText");
+
+  let slideList = [];
+  let currentIdx = 0;
+
+  // 1. JSON 파일 불러오기 (상대 경로 지정)
+  fetch("./slides/slides.json")
+    .then(response => {
+      if (!response.ok) throw new Error("JSON 파일을 찾을 수 없습니다.");
+      return response.json();
+    })
+    .then(data => {
+      if (data && data.slides && data.slides.length > 0) {
+        slideList = data.slides;
+        updateSlide(); // 첫 번째 슬라이드 표시
+      } else {
+        showFallback();
+      }
+    })
+    .catch(error => {
+      console.error("❌ 슬라이드 로드 실패:", error);
+      showFallback();
+    });
+
+  // 2. 화면에 슬라이드 업데이트하는 함수
+  function updateSlide() {
+    if (slideList.length === 0) return;
+
+    // 이미지 경로 설정 (상대 경로)
+    slideImage.src = `./slides/${slideList[currentIdx]}`;
+    slideImage.classList.remove("hidden");
+    slideFallback.classList.add("hidden");
+
+    // 인디케이터 표시 (예: 1 / 41)
+    if (slideIndicator) {
+      slideIndicator.textContent = `${currentIdx + 1} / ${slideList.length}`;
+    }
+
+    // 프로그레스 바 업데이트
+    const progressPercent = Math.round(((currentIdx + 1) / slideList.length) * 100);
+    if (progressFill) progressFill.style.width = `${progressPercent}%`;
+    if (progressText) progressText.textContent = `${progressPercent}%`;
+  }
+
+  // 3. 실패 시 대체 문구 띄우는 함수
+  function showFallback() {
+    if (slideImage) slideImage.classList.add("hidden");
+    if (slideFallback) slideFallback.classList.remove("hidden");
+  }
+
+  // 4. 이전 / 다음 버튼 이벤트 리스너
+  if (prevBtn) {
+    prevBtn.addEventListener("click", () => {
+      if (currentIdx > 0) {
+        currentIdx--;
+        updateSlide();
+      }
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener("click", () => {
+      if (currentIdx < slideList.length - 1) {
+        currentIdx++;
+        updateSlide();
+      }
+    });
+  }
+  
 });
 ``

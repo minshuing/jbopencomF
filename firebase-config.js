@@ -8,14 +8,13 @@ import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.5/firebase
   // Your web app's Firebase configuration
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "AIzaSyBFex4Xozb0v0ZRgJD-CntCth78nWmuVKo",
-    authDomain: "jbopencom.firebaseapp.com",
-    databaseURL: "https://jbopencom-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "jbopencom",
-    storageBucket: "jbopencom.firebasestorage.app",
-    messagingSenderId: "1098347062568",
-    appId: "1:1098347062568:web:0ed678801423177a965c1d",
-    measurementId: "G-XN5EXM9PN1"
+  apiKey: "AIzaSyB5cg_Mouoa5rcm14qpVK8knhpmGmsr7u0",
+  authDomain: "opencomm-6a384.firebaseapp.com",
+  projectId: "opencomm-6a384",
+  storageBucket: "opencomm-6a384.firebasestorage.app",
+  messagingSenderId: "730504240462",
+  appId: "1:730504240462:web:e6e1bd83a32a4d01d2521f",
+  measurementId: "G-HTXNM6435V"
 };
 
 const app = initializeApp(firebaseConfig);

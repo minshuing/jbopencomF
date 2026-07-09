@@ -14,14 +14,13 @@ import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.5/firebase
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyB5cg_Mouoa5rcm14qpVK8knhpmGmsr7u0",
-  authDomain: "opencomm-6a384.firebaseapp.com",
-  databaseURL: "https://opencomm-6a384-default-rtdb.firebaseio.com",
-  projectId: "opencomm-6a384",
-  storageBucket: "opencomm-6a384.firebasestorage.app",
-  messagingSenderId: "730504240462",
-  appId: "1:730504240462:web:169bb8e0938b8212d2521f",
-  measurementId: "G-Y3CG92YQR5"
+  apiKey: "AIzaSyA9faC7zR-Ep5tV3aqnD2684xImqrKnG7s",
+  authDomain: "opencommjb.firebaseapp.com",
+  projectId: "opencommjb",
+  storageBucket: "opencommjb.firebasestorage.app",
+  messagingSenderId: "850083355543",
+  appId: "1:850083355543:web:49f565b041a698b6a542d2",
+  measurementId: "G-TEWDXX37W0"
 };
 
 // Initialize Firebase
